@@ -83,8 +83,10 @@ function M.save_todos()
         print('uh oh') -- TODO:
     else
         local todo_content = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
-        for _, l in ipairs(todo_content) do
-            file:write(l .. '\n')
+        if next(todo_content) ~= nil then
+            for _, l in ipairs(todo_content) do
+                file:write(l .. '\n')
+            end
         end
         file:close()
     end
