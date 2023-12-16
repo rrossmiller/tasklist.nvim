@@ -1,15 +1,20 @@
 # Tasklist.nvim
 A floating window plugin for easy access to todos and other notes
 
+<img src="assets/prj-todos.png" alt="project todos" width="800"/>
+
+---
+
+<img src="assets/glbl-todos.png" alt="global todos" width="800"/>
+
 ## 📦 Installation
 
 Install the plugin with your preferred package manager:
 
-### [folke](https://github.com/folke/lazy.nvim)
+### [Lazy](https://github.com/folke/lazy.nvim)
 
 ```lua
 -- Lua
-
 return {
   "rrossmiller/tasklist.nvim",
   config = function(opts)
@@ -39,9 +44,11 @@ Be careful having multiple instances of nvim with the same todo window open. For
 and another in the `ui/` dir of the same repo. If each instance has the project's todo window open, the todos saved in one instance (when the
 window is closed) will be overwritten when the other closes its window.
 
+I have a plan to fix this.
+
 ## 🛠️ Roadmap
 - [x] read and write todos in buffer from/to a file
 - [x] project/repo-level vs global todo 
 - [ ] fancy icons marking doneness?
     - change a prefix of a line to mean that the todo is done and the style of the line should change to reflect that
-- [ ] sync the instances/open windows via an rpc server
+- [ ] sync the instances/open windows (rpc)
