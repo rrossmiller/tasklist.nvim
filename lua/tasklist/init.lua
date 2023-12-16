@@ -9,6 +9,8 @@ local M = {}
 
 function M.setup(opts)
     config.setup(opts)
+    -- vim.api.nvim_create_user_command("TasklistToggleGlobal", function(cmd) M.toggle_window() end)
+    -- vim.api.nvim_create_user_command("TasklistToggleProject", function(cmd) M.toggle_proj_window() end)
 
     vim.api.nvim_create_autocmd("VimLeavePre", {
         group = vim.api.nvim_create_augroup("todo_content", { clear = true }),
