@@ -1,11 +1,15 @@
 # Tasklist.nvim
 A floating window plugin for easy access to todos and other notes
 
+The todos for a project...
+
 <img src="assets/prj-todos.png" alt="project todos" width="800"/>
 
----
+... are separate from the "global" todos. The todo's that can't be associated with a single project.
 
 <img src="assets/glbl-todos.png" alt="global todos" width="800"/>
+
+If the directory that you open neovim from is a part of a git repo, the todos will be associated with the repo. Otherwise, the todos are associated with the directory you're in.
 
 ## 📦 Installation
 
