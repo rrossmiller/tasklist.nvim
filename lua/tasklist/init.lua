@@ -153,7 +153,6 @@ function M.get_proj_name()
     if result and result ~= '' then
         -- Neovim is in a Git repository, get the repository name or root dir
         local repo_path = vim.fn.system('git rev-parse --show-toplevel 2>/dev/null')
-        -- return repo_path and repo_path:gsub('\n', '') or ''
         return repo_path and vim.fn.fnamemodify(repo_path:gsub('\n', ''), ':t') or ''
     else -- else get the name of the directory
         -- Neovim is not in a Git repository, get the current directory's name
