@@ -1,4 +1,4 @@
-# This needs a better name
+# Tasklist.nvim
 A floating window plugin for easy access to todos and other notes
 
 - [x] read and write todos in buffer from/to a file
