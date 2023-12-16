@@ -34,7 +34,7 @@ return {
 {
     dir = vim.fn.expand(vim.fn.stdpath("state") .. "/todos/"), -- directory where todo files are saved. ~/.local/store/nvim/todos/
     style = '', -- neovim supports blank, or simple
-    border = 'rounded', -- nvim allows allows: https://neovim.io/doc/user/api.html#api-win_config:~:text=%27winhighlight%27.-,border
+    border = 'rounded', -- nvim allows these: https://neovim.io/doc/user/api.html#api-win_config:~:text=%27winhighlight%27.-,border
 }
 ```
 
