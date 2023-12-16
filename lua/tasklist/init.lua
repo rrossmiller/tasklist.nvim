@@ -3,6 +3,7 @@ local config = require("tasklist.config")
 local api = vim.api
 local buf, win
 local win_open = false
+local global_todo = true
 
 local M = {}
 
@@ -39,9 +40,14 @@ function M.open_window()
     local row = math.ceil((height - win_height) / 2 - 1)
     local col = math.ceil((width - win_width) / 2)
 
+    local title = "TODO"
+    if not global_todo then
+        -- get the root of the git repo, or the name of the directory if it's not a repo
+        title = M.get_proj_name()
+    end
     -- set some options
     local opts = {
-        title = "TODO",
+        title = title,
         title_pos = "center",
         style = config.options.style,
         relative = "editor",
@@ -60,7 +66,11 @@ function M.open_window()
 end
 
 function M.read_content()
-    local f = io.open(config.options.dir .. 'todo', 'r')
+    local fname = 'todo'
+    if not global_todo then
+        fname = M.get_proj_name()
+    end
+    local f = io.open(config.options.dir .. fname, 'r')
     local lines = {}
     if f then
         for line in f:lines() do
@@ -78,7 +88,11 @@ end
 
 function M.save_todos()
     -- write buffer to todofile
-    local file = io.open(config.options.dir .. "todo", 'w')
+    local fname = 'todo'
+    if not global_todo then
+        fname = M.get_proj_name()
+    end
+    local file = io.open(config.options.dir .. fname, 'w')
     if not file then
         print('uh oh') -- TODO:
     else
@@ -92,13 +106,57 @@ function M.save_todos()
     end
 end
 
+-- toggle_window and toggle_proj_window are the same, just with inverted global_todo logic
+-- toggle global todo
 function M.toggle_window()
-    if win_open then
+    -- the project window is open. close that and open the global todo window
+    if win_open and not global_todo then
         M.close_window()
-    else
+        global_todo = true
         M.open_window()
+        win_open = true
+    elseif win_open then -- the todo window is open... close it
+        M.close_window()
+        win_open = false
+    else -- nothing is open yet
+        global_todo = true
+        M.open_window()
+        win_open = true
     end
-    win_open = not win_open
+end
+
+-- toggle project todo
+function M.toggle_proj_window()
+    -- the global window is open. close it and open the project window
+    if win_open and global_todo then
+        M.close_window()
+        global_todo = false
+        M.open_window()
+        win_open = true
+    elseif win_open then -- proj window is open... close it
+        M.close_window()
+        win_open = false
+    else -- nothing is open yet
+        global_todo = false
+        M.open_window()
+        win_open = true
+    end
+    global_todo = false
+end
+
+function M.get_proj_name()
+    -- get the current directory
+    local result = vim.fn.system('git rev-parse --is-inside-work-tree 2>/dev/null')
+    -- if it's a git repo. get the name of the repo/root dir
+    if result and result ~= '' then
+        -- Neovim is in a Git repository, get the repository name or root dir
+        local repo_path = vim.fn.system('git rev-parse --show-toplevel 2>/dev/null')
+        -- return repo_path and repo_path:gsub('\n', '') or ''
+        return repo_path and vim.fn.fnamemodify(repo_path:gsub('\n', ''), ':t') or ''
+    else -- else get the name of the directory
+        -- Neovim is not in a Git repository, get the current directory's name
+        return vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
+    end
 end
 
 return M
