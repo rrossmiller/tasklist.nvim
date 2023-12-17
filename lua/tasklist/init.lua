@@ -4,8 +4,16 @@ local api = vim.api
 local buf, win
 local win_open = false
 local global_todo = true
+local suffix = ".todo"
 
 local M = {}
+
+local function f(a, b, c)
+    local content = M.read_content()
+    if vim.api.nvim_buf_is_valid(buf) then
+        vim.api.nvim_buf_set_lines(buf, 0, -1, false, content)
+    end
+end
 
 function M.setup(opts)
     config.setup(opts)
@@ -22,6 +30,12 @@ function M.setup(opts)
                 M.save_todos()
             end
         end,
+    })
+
+    local pth = config.options.dir .. "/*.todo"
+    -- update window whenever todo list is updated
+    local id = vim.fn.jobstart("fswatch -x +i " .. pth, {
+        on_stdout = f,
     })
 end
 
@@ -68,9 +82,9 @@ function M.open_window()
 end
 
 function M.read_content()
-    local fname = 'todo'
+    local fname = 'todo' .. suffix
     if not global_todo then
-        fname = M.get_proj_name()
+        fname = M.get_proj_name() .. suffix
     end
     local f = io.open(config.options.dir .. fname, 'r')
     local lines = {}
@@ -90,9 +104,9 @@ end
 
 function M.save_todos()
     -- write buffer to todofile
-    local fname = 'todo'
+    local fname = 'todo' .. suffix
     if not global_todo then
-        fname = M.get_proj_name()
+        fname = M.get_proj_name() .. suffix
     end
     local file = io.open(config.options.dir .. fname, 'w')
     if not file then
