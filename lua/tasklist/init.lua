@@ -1,4 +1,6 @@
 -- much of the credit goes to: https://dev.to/2nit/how-to-write-neovim-plugins-in-lua-5cca
+-- also folke's https://github.com/folke/persistence.nvim
+-- also gpt 3.5
 local config = require("tasklist.config")
 local api = vim.api
 local buf, win
@@ -8,9 +10,10 @@ local suffix = ".todo"
 
 local M = {}
 
-local function f(a, b, c)
-    local content = M.read_content()
+local function update_buffer(chan_id, data, name)
+    -- https://neovim.io/doc/user/channel.html#on_stdout
     if vim.api.nvim_buf_is_valid(buf) then
+        local content = M.read_content()
         vim.api.nvim_buf_set_lines(buf, 0, -1, false, content)
     end
 end
@@ -34,8 +37,8 @@ function M.setup(opts)
 
     local pth = config.options.dir .. "/*.todo"
     -- update window whenever todo list is updated
-    local id = vim.fn.jobstart("fswatch -x +i " .. pth, {
-        on_stdout = f,
+    vim.fn.jobstart("fswatch -x +i " .. pth, {
+        on_stdout = update_buffer,
     })
 end
 
