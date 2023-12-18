@@ -12,7 +12,11 @@ local M = {}
 
 local function update_buffer(chan_id, data, name)
     -- https://neovim.io/doc/user/channel.html#on_stdout
-    if vim.api.nvim_buf_is_valid(buf) then
+    local fname = 'todo' .. suffix
+    if not global_todo then
+        fname = M.get_proj_name() .. suffix
+    end
+    if vim.api.nvim_buf_is_valid(buf) and data[1]:find(fname) then
         local content = M.read_content()
         vim.api.nvim_buf_set_lines(buf, 0, -1, false, content)
     end
@@ -20,8 +24,6 @@ end
 
 function M.setup(opts)
     config.setup(opts)
-    -- vim.api.nvim_create_user_command("TasklistToggleGlobal", function(cmd) M.toggle_window() end)
-    -- vim.api.nvim_create_user_command("TasklistToggleProject", function(cmd) M.toggle_proj_window() end)
 
     vim.api.nvim_create_autocmd("VimLeavePre", {
         group = vim.api.nvim_create_augroup("todo_content", { clear = true }),
