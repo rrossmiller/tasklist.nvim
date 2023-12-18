@@ -53,6 +53,8 @@ I have a plan to fix this.
 ## 🛠️ Roadmap
 - [x] read and write todos in buffer from/to a file
 - [x] project/repo-level vs global todo 
+- [x] sync the instances/open windows (rpc)
+  - [x] update the window whenever any todo window/file was updated
+  - [x] only update the window if the underlying file was updated
 - [ ] fancy icons marking doneness?
     - change a prefix of a line to mean that the todo is done and the style of the line should change to reflect that
-- [ ] sync the instances/open windows (rpc)

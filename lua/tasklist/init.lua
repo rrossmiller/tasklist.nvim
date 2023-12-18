@@ -1,16 +1,29 @@
 -- much of the credit goes to: https://dev.to/2nit/how-to-write-neovim-plugins-in-lua-5cca
+-- also folke's https://github.com/folke/persistence.nvim
+-- also gpt 3.5
 local config = require("tasklist.config")
 local api = vim.api
 local buf, win
 local win_open = false
 local global_todo = true
+local suffix = ".todo"
 
 local M = {}
 
+local function update_buffer(chan_id, data, name)
+    -- https://neovim.io/doc/user/channel.html#on_stdout
+    local fname = 'todo' .. suffix
+    if not global_todo then
+        fname = M.get_proj_name() .. suffix
+    end
+    if vim.api.nvim_buf_is_valid(buf) and data[1]:find(fname) then
+        local content = M.read_content()
+        vim.api.nvim_buf_set_lines(buf, 0, -1, false, content)
+    end
+end
+
 function M.setup(opts)
     config.setup(opts)
-    -- vim.api.nvim_create_user_command("TasklistToggleGlobal", function(cmd) M.toggle_window() end)
-    -- vim.api.nvim_create_user_command("TasklistToggleProject", function(cmd) M.toggle_proj_window() end)
 
     vim.api.nvim_create_autocmd("VimLeavePre", {
         group = vim.api.nvim_create_augroup("todo_content", { clear = true }),
@@ -22,6 +35,12 @@ function M.setup(opts)
                 M.save_todos()
             end
         end,
+    })
+
+    local pth = config.options.dir .. "/*.todo"
+    -- update window whenever todo list is updated
+    vim.fn.jobstart("fswatch -x +i " .. pth, {
+        on_stdout = update_buffer,
     })
 end
 
@@ -68,9 +87,9 @@ function M.open_window()
 end
 
 function M.read_content()
-    local fname = 'todo'
+    local fname = 'todo' .. suffix
     if not global_todo then
-        fname = M.get_proj_name()
+        fname = M.get_proj_name() .. suffix
     end
     local f = io.open(config.options.dir .. fname, 'r')
     local lines = {}
@@ -90,9 +109,9 @@ end
 
 function M.save_todos()
     -- write buffer to todofile
-    local fname = 'todo'
+    local fname = 'todo' .. suffix
     if not global_todo then
-        fname = M.get_proj_name()
+        fname = M.get_proj_name() .. suffix
     end
     local file = io.open(config.options.dir .. fname, 'w')
     if not file then
