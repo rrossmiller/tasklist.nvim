@@ -42,14 +42,6 @@ return {
 }
 ```
 
-
-## Known issues
-Be careful having multiple instances of nvim with the same todo window open. For example, if you have one nvim instance opened in the `api/` dir 
-and another in the `ui/` dir of the same repo. If each instance has the project's todo window open, the todos saved in one instance (when the
-window is closed) will be overwritten when the other closes its window.
-
-I have a plan to fix this.
-
 ## 🛠️ Roadmap
 - [x] read and write todos in buffer from/to a file
 - [x] project/repo-level vs global todo 
