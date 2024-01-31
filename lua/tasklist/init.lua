@@ -18,30 +18,12 @@ local function update_buffer(chan_id, data, name)
     end
     if vim.api.nvim_buf_is_valid(buf) and data[1]:find(fname) then
         local content = M.read_content()
-        vim.api.nvim_buf_set_lines(buf, 0, -1, false, content)
+        if #content == 0 then
+            vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "" })
+        else
+            vim.api.nvim_buf_set_lines(buf, 0, -1, false, content)
+        end
     end
-end
-
-function M.setup(opts)
-    config.setup(opts)
-
-    vim.api.nvim_create_autocmd("VimLeavePre", {
-        group = vim.api.nvim_create_augroup("todo_content", { clear = true }),
-        callback = function()
-            if win_open then
-                -- if Config.options.pre_save then
-                --     Config.options.pre_save()
-                -- end
-                M.save_todos()
-            end
-        end,
-    })
-
-    local pth = config.options.dir .. "/*.todo"
-    -- update window whenever todo list is updated
-    vim.fn.jobstart("fswatch -x +i " .. pth, {
-        on_stdout = update_buffer,
-    })
 end
 
 function M.open_window()
@@ -177,6 +159,28 @@ function M.get_proj_name()
         -- Neovim is not in a Git repository, get the current directory's name
         return vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
     end
+end
+
+function M.setup(opts)
+    config.setup(opts)
+
+    vim.api.nvim_create_autocmd({ "VimLeavePre", "TextChanged","TextChangedI" }, {
+        -- group = vim.api.nvim_create_augroup("todo_content", { clear = true }),
+        callback = function()
+            if win_open then
+                -- if Config.options.pre_save then
+                --     Config.options.pre_save()
+                -- end
+                M.save_todos()
+            end
+        end,
+    })
+
+    local pth = config.options.dir .. "/*.todo"
+    -- update window whenever todo list is updated
+    vim.fn.jobstart("fswatch -x +i " .. pth, {
+        on_stdout = update_buffer,
+    })
 end
 
 return M
