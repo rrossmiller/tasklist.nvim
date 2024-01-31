@@ -16,7 +16,12 @@ local function update_buffer(chan_id, data, name)
     if not global_todo then
         fname = M.get_proj_name() .. suffix
     end
-    if vim.api.nvim_buf_is_valid(buf) and data[1]:find(fname) then
+
+    local ok, is_valid = pcall(vim.api.nvim_buf_is_valid, buf)
+    if not ok then
+        return
+    end
+    if is_valid and data[1]:find(fname) then
         local content = M.read_content()
         if #content == 0 then
             vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "" })
@@ -164,7 +169,7 @@ end
 function M.setup(opts)
     config.setup(opts)
 
-    vim.api.nvim_create_autocmd({ "VimLeavePre", "TextChanged","TextChangedI" }, {
+    vim.api.nvim_create_autocmd({ "VimLeavePre", "TextChanged", "TextChangedI" }, {
         -- group = vim.api.nvim_create_augroup("todo_content", { clear = true }),
         callback = function()
             if win_open then
