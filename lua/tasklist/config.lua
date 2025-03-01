@@ -4,8 +4,8 @@ local M = {}
 ---@class Opts
 local defaults = {
     dir = vim.fn.expand(vim.fn.stdpath("state") .. "/todos/"), -- directory where todo files are saved
-    style = '',
-    border = 'rounded',
+    style = "",
+    border = "rounded",
 }
 
 ---@type Opts
@@ -20,7 +20,6 @@ function M.setup(opts)
         vim.fn.mkdir(M.options.dir, "p")
     end
 end
-
 
 -- Example usage
 -- if M.is_git_repo() then

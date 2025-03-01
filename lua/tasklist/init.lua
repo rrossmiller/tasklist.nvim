@@ -12,7 +12,7 @@ local M = {}
 
 local function update_buffer(chan_id, data, name)
     -- https://neovim.io/doc/user/channel.html#on_stdout
-    local fname = 'todo' .. suffix
+    local fname = "todo" .. suffix
     if not global_todo then
         fname = M.get_proj_name() .. suffix
     end
@@ -35,7 +35,7 @@ function M.open_window()
     -- create new empty buffer
     buf = api.nvim_create_buf(false, true)
 
-    api.nvim_buf_set_option(buf, 'bufhidden', 'wipe')
+    api.nvim_buf_set_option(buf, "bufhidden", "wipe")
     -- get dimensions
     local width = api.nvim_get_option("columns")
     local height = api.nvim_get_option("lines")
@@ -74,11 +74,11 @@ function M.open_window()
 end
 
 function M.read_content()
-    local fname = 'todo' .. suffix
+    local fname = "todo" .. suffix
     if not global_todo then
         fname = M.get_proj_name() .. suffix
     end
-    local f = io.open(config.options.dir .. fname, 'r')
+    local f = io.open(config.options.dir .. fname, "r")
     local lines = {}
     if f then
         for line in f:lines() do
@@ -96,18 +96,18 @@ end
 
 function M.save_todos()
     -- write buffer to todofile
-    local fname = 'todo' .. suffix
+    local fname = "todo" .. suffix
     if not global_todo then
         fname = M.get_proj_name() .. suffix
     end
-    local file = io.open(config.options.dir .. fname, 'w')
+    local file = io.open(config.options.dir .. fname, "w")
     if not file then
-        print('uh oh') -- TODO:
+        print("uh oh") -- TODO:
     else
         local todo_content = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
         if next(todo_content) ~= nil then
             for _, l in ipairs(todo_content) do
-                file:write(l .. '\n')
+                file:write(l .. "\n")
             end
         end
         file:close()
@@ -154,15 +154,15 @@ end
 
 function M.get_proj_name()
     -- get the current directory
-    local result = vim.fn.system('git rev-parse --is-inside-work-tree 2>/dev/null')
+    local result = vim.fn.system("git rev-parse --is-inside-work-tree 2>/dev/null")
     -- if it's a git repo. get the name of the repo/root dir
-    if result and result ~= '' then
+    if result and result ~= "" then
         -- Neovim is in a Git repository, get the repository name or root dir
-        local repo_path = vim.fn.system('git rev-parse --show-toplevel 2>/dev/null')
-        return repo_path and vim.fn.fnamemodify(repo_path:gsub('\n', ''), ':t') or ''
+        local repo_path = vim.fn.system("git rev-parse --show-toplevel 2>/dev/null")
+        return repo_path and vim.fn.fnamemodify(repo_path:gsub("\n", ""), ":t") or ""
     else -- else get the name of the directory
         -- Neovim is not in a Git repository, get the current directory's name
-        return vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
+        return vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
     end
 end
 
