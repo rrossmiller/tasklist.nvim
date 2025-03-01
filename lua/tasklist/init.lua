@@ -183,7 +183,7 @@ function M.setup(opts)
 
     local pth = config.options.dir .. "/*.todo"
     -- update window whenever todo list is updated
-    vim.fn.jobstart("fswatch -x +i " .. pth, {
+    vim.fn.jobstart("fswatch -x -i " .. pth, {
         on_stdout = update_buffer,
     })
 end
